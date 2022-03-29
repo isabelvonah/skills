@@ -17,6 +17,12 @@ def get_url(id):
     url = template.format(id)
     return url
 
+# The csv-file for the results gets created and prepared with the title row
+# must be commented out when adding additional rows instead of creating a new file
+with open('offers.csv', 'w', newline='', encoding='utf-8') as f:
+   writer = csv.writer(f)
+   writer.writerow(['id', 'title', 'date', 'place', 'position', 'workload', 'categories', 'text'])
+
 for i in range(len(ids)):
 
     url = get_url(ids[i])
@@ -49,6 +55,9 @@ for i in range(len(ids)):
     text = get_text(str(iframe))
 
     offer = (ids[i], title, date, place, position, workload, categories, text)
-    print(offer)
+    
+    with open('offers.csv', 'a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(offer)
 
 
