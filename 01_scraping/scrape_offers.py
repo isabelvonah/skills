@@ -21,7 +21,7 @@ def get_url(id):
 # must be commented out when adding additional rows instead of creating a new file
 with open('offers.csv', 'w', newline='', encoding='utf-8') as f:
    writer = csv.writer(f)
-   writer.writerow(['id', 'title', 'date', 'place', 'position', 'workload', 'categories', 'text'])
+   writer.writerow(['id', 'title', 'date', 'company', 'place', 'position', 'workload', 'categories', 'text'])
 
 for i in range(len(ids)):
 
@@ -39,22 +39,17 @@ for i in range(len(ids)):
     workload = spans[16].get("title")
     place = spans[10].get("title")
 
+    cat_div = soup.find("div", "Div-sc-1cpunnt-0 ffMwOV")
+    categories = cat_div.get_text()[10:]
+
     links = soup.find_all("a", "Link__ExtendedRRLink-sc-czsz28-1 Link-sc-czsz28-2 jEnTUT")
-    categories = ""
-    for i in range(len(links)-2):
-        categories += links[i+1].get_text()
-        categories += ", "
-    categories = categories[:-2]
-
-    # the full company name is missing --> to do
-    company_div = soup.find_all("div", "Div-sc-1cpunnt-0 fywjdN")
-    
-
+    company = links[0].get_text()
+  
     offer_div = soup.find("div", "Div-sc-1cpunnt-0 DetailVacancyView__StyledVacancyDetailWrapper-sc-8f0fxs-0 jzJSph gpGrF")
     iframe = offer_div.div
     text = get_text(str(iframe))
 
-    offer = (ids[i], title, date, place, position, workload, categories, text)
+    offer = (ids[i], title, date, company, place, position, workload, categories, text)
     
     with open('offers.csv', 'a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
