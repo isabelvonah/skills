@@ -39,13 +39,11 @@ for i in range(len(ids)):
     workload = spans[16].get("title")
     place = spans[10].get("title")
 
+    cat_div = soup.find("div", "Div-sc-1cpunnt-0 ffMwOV")
+    categories = cat_div.get_text()[10:]
+
     links = soup.find_all("a", "Link__ExtendedRRLink-sc-czsz28-1 Link-sc-czsz28-2 jEnTUT")
     company = links[0].get_text()
-    categories = ""
-    for i in range(len(links)-2):
-        categories += links[i+1].get_text()
-        categories += ", "
-    categories = categories[:-2]
   
     offer_div = soup.find("div", "Div-sc-1cpunnt-0 DetailVacancyView__StyledVacancyDetailWrapper-sc-8f0fxs-0 jzJSph gpGrF")
     iframe = offer_div.div
