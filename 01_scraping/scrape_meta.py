@@ -6,13 +6,13 @@ from bs4 import BeautifulSoup
 
 # These categories serve as examples. Eventually, a function should iterate over a list of categories and modify the url accordingly
 cat = "information-technology-telecom"
-subcat = "database-specialists-development"
+subcat = "/database-specialists-development"
 employment_typ = "5"
 industry = "4"
 
 # forms the url
 def get_url(page):
-    template = "https://www.jobs.ch/en/vacancies/{}/{}/??employment-type={}&industry={}&page={}term="
+    template = "https://www.jobs.ch/en/vacancies/{}{}/?employment-type={}&industry={}&page={}term="
     url = template.format(cat, subcat, employment_typ, industry, page)
     return url
 
