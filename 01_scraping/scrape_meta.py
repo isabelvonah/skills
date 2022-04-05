@@ -1,8 +1,6 @@
 import csv
 from datetime import datetime
 from time import strftime
-import time
-import random
 import requests
 from bs4 import BeautifulSoup
 
@@ -47,46 +45,45 @@ def get_job(article, page, cat, subcat, employment_typ, industry):
     job = (id, cat, subcat, employment_typ, industry, page, title, company, place, promo, today)
     return job
 
-# The first page gets loaded to detect the number of pages
-url = get_url(0)
-
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'lxml')
-
-navigation_span = soup.find_all("span", "Span-sc-1ybanni-0 Text__span-sc-1lu7urs-8 Text-sc-1lu7urs-9 fJEZEL")
-if len(navigation_span) == 0:
-    number_of_pages = 1
-else:
-    number_of_pages = int(str(navigation_span[0])[-11:-7].replace("/",""))
-
-# The csv-file for the results gets created and prepared with the title row
-# must be commented out when adding additional rows instead of creating a new file
-with open('urls_5.csv', 'w', newline='', encoding='utf-8') as f:
-   writer = csv.writer(f)
-   writer.writerow(['id', 'cat', 'subcat', 'employment-typ', 'industry', 'page', 'title', 'company', 'place', 'promo', 'date'])
-
-# for every page of the results gets analysed with BeautifulSoup and written (appended) into the created csv-file 
-for i in range(number_of_pages):
-    
-    jobs = []
-    page = i + 1
-    url = get_url(page)
+def scrape(cat,subcat,employment_typ,industry):
+    # The first page gets loaded to detect the number of pages
+    url = get_url(0)
 
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
 
-    articles = soup.find_all('article')
+    navigation_span = soup.find_all("span", "Span-sc-1ybanni-0 Text__span-sc-1lu7urs-8 Text-sc-1lu7urs-9 fJEZEL")
+    if len(navigation_span) == 0:
+        number_of_pages = 1
+    else:
+        number_of_pages = int(str(navigation_span[0])[-11:-7].replace("/",""))
 
-    # goes through all articles (job offers)
-    for article in articles:
-        job = get_job(article, page, cat, subcat, employment_typ, industry)
-        jobs.append(job)
-        #time.sleep(random.randint(0,9))
-        #print("looped")
-
-    with open('urls_5.csv', 'a', newline='', encoding='utf-8') as f:
+    # The csv-file for the results gets created and prepared with the title row
+    # must be commented out when adding additional rows instead of creating a new file
+    with open('urls_5.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerows(jobs)
+        writer.writerow(['id', 'cat', 'subcat', 'employment-typ', 'industry', 'page', 'title', 'company', 'place', 'promo', 'date'])
 
+    # for every page of the results gets analysed with BeautifulSoup and written (appended) into the created csv-file 
+    for i in range(number_of_pages):
+        
+        jobs = []
+        page = i + 1
+        url = get_url(page)
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'lxml')
+
+        articles = soup.find_all('article')
+
+        # goes through all articles (job offers)
+        for article in articles:
+            job = get_job(article, page, cat, subcat, employment_typ, industry)
+            jobs.append(job)
+
+
+        with open('urls_5.csv', 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerows(jobs)
 
 
