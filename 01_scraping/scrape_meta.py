@@ -3,6 +3,8 @@ from datetime import datetime
 from time import strftime
 import requests
 from bs4 import BeautifulSoup
+import time
+import random
 
 # These categories serve as examples. Eventually, a function should iterate over a list of categories and modify the url accordingly
 cat = "information-technology-telecom"
@@ -11,8 +13,8 @@ employment_typ = "5"
 industry = "4"
 
 # forms the url
-def get_url(page):
-    template = "https://www.jobs.ch/en/vacancies/{}{}/?employment-type={}&industry={}&page={}term="
+def get_url(cat, subcat, employment_typ, industry, page):
+    template = "https://www.jobs.ch/en/vacancies/{}/{}/?employment-type={}&industry={}&page={}term="
     url = template.format(cat, subcat, employment_typ, industry, page)
     return url
 
@@ -38,16 +40,20 @@ def get_job(article, page, cat, subcat, employment_typ, industry):
     except:
         place = ""
     
-    # The date of the request is also required
+    # The date of the request is also required as a log attribute
     today = datetime.today(),strftime('%y-%m-%d')
 
-    # all attributes are stored in a tuple
+    # all attributes are stored in a tuple and returned
     job = (id, cat, subcat, employment_typ, industry, page, title, company, place, promo, today)
     return job
 
 def scrape(cat,subcat,employment_typ,industry):
+
     # The first page gets loaded to detect the number of pages
-    url = get_url(0)
+    url = get_url(cat, subcat, employment_typ, industry, 0)
+
+    # to slow the algorithm down and don't send too many requests at once
+    time.sleep(random.randint(0,5))
 
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
@@ -58,32 +64,71 @@ def scrape(cat,subcat,employment_typ,industry):
     else:
         number_of_pages = int(str(navigation_span[0])[-11:-7].replace("/",""))
 
-    # The csv-file for the results gets created and prepared with the title row
-    # must be commented out when adding additional rows instead of creating a new file
-    with open('urls_5.csv', 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(['id', 'cat', 'subcat', 'employment-typ', 'industry', 'page', 'title', 'company', 'place', 'promo', 'date'])
+    # preparation of filename
+    file = "result_" + cat + "_" + subcat
 
     # for every page of the results gets analysed with BeautifulSoup and written (appended) into the created csv-file 
     for i in range(number_of_pages):
         
         jobs = []
         page = i + 1
-        url = get_url(page)
+        url = get_url(cat, subcat, employment_typ, industry, page)
+
+        # to slow the algorithm down and don't send too many requests at once
+        time.sleep(random.randint(0,5))
 
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'lxml')
 
         articles = soup.find_all('article')
 
-        # goes through all articles (job offers)
-        for article in articles:
-            job = get_job(article, page, cat, subcat, employment_typ, industry)
-            jobs.append(job)
+        if len(articles) != 0:
+
+            # goes through all articles (job offers)
+            for article in articles:
+                job = get_job(article, page, cat, subcat, employment_typ, industry)
+                jobs.append(job)
+
+            with open(file + '.csv', 'a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerows(jobs)
+
+def scrape_cat(cat, subcat):
+
+    # preparation of filename
+    file = "result_" + cat + "_" + subcat
+
+    # creation of the csv-file
+    with open(file + '.csv', 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['id', 'cat', 'subcat', 'employment-typ', 'industry', 'page', 'title', 'company', 'place', 'promo', 'date'])
+    
+    # goes through all employment_typ's
+    for et in range(6):
+        # goes through all industries
+        for ind in range(24):
+            scrape(cat, subcat, str(et + 1), str(ind + 1))
 
 
-        with open('urls_5.csv', 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerows(jobs)
 
+test = {
+    "purchasing-logistics-trading": [
+        "logistics-supply-chain"],
+    "marketing-communications-editorial": [
+        "online-marketing-social-media",
+        "product-brand-management"]
+}
 
+for cat in test.keys():
+    array = test.get(cat)
+    for subcat in array:
+        scrape_cat(cat, subcat)
+
+empl_typs = {
+    "Temporary": 1,
+    "Freelance": 2,
+    "Internship": 3,
+    "Supplementary income": 4,
+    "Unlimited employment": 5,
+    "Apprenticeship": 6
+}
