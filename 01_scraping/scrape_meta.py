@@ -116,17 +116,58 @@ def scrape_cat(cat, subcat):
             scrape(cat, subcat, str(et + 1), str(ind + 1))
 
 
-test = {
+categories = {
+    "admin-hr-consulting-ceo": [""],
+    "finance-trusts-real-estate": [
+        "auditing-revision-auditing",
+        "controlling",
+        "finance"],
+    "banking-insurance": [
+        "asset-portfolio-management",
+        "actuary-mathematics",
+        "financial-business-analysis",
+        "funds-stocks-trade",
+        "risk-management-compliance",
+        "treasury-controlling-auditing",
+        "project-management"],
     "purchasing-logistics-trading": [
         "logistics-supply-chain"],
     "marketing-communications-editorial": [
         "online-marketing-social-media",
-        "product-brand-management"]
+        "product-brand-management"],
+    "information-technology-telecom": [
+        "testing-audit-security",
+        "consultancy-business-informatics",
+        "database-specialists-development",
+        "network-specialists-engineers",
+        "project-management-analysis",
+        "erp-sap-crm",
+        "software-architecture-engineering",
+        "software-development",
+        "web-programming-mobile",
+        "system-engineering",
+        "system-administration"],
+    "chemical-pharma-biotechnology": [
+        "biology-biotechnology",
+        "chemical-r-d-analysis-production",
+        "pharmaceutical-r-d-analysis-production",
+        "quality-assurance-management"],
+    "electronics-engineering-watches": [
+        "electronics-electrotechnics",
+        "medical-equipment-engineering",
+        "quality-assurance-management"],
+    "machine-plant-engin-manufacturing": [
+        "automation-process-engineering",
+        "quality-assurance-management"],
+    "public-admin-education-social": [
+        "public-administration",
+        "science-research",
+        "teaching-lecturing"] 
 }
 
 # goes through all categories given
-for cat in test.keys():
-    array = test.get(cat)
+for cat in categories.keys():
+    array = categories.get(cat)
     for subcat in array:
         scrape_cat(cat, subcat)
 
