@@ -6,23 +6,20 @@ from bs4 import BeautifulSoup
 import time
 import random
 
-# These categories serve as examples. Eventually, a function should iterate over a list of categories and modify the url accordingly
-cat = "information-technology-telecom"
-subcat = "/database-specialists-development"
-employment_typ = "5"
-industry = "4"
 
 # forms the url
 def get_url(cat, subcat, employment_typ, industry, page):
+
     template = "https://www.jobs.ch/en/vacancies/{}/{}/?employment-type={}&industry={}&page={}term="
     url = template.format(cat, subcat, employment_typ, industry, page)
     return url
+
 
 # returns a tuple of job attributes
 # article represents one result of a job search page
 def get_job(article, page, cat, subcat, employment_typ, industry):
 
-    # The a-tag links to a url including the unique id of the job offer and also deliver the title of the offer
+    # The a-tag links to a url including the unique id of the job offer and also delivers the title of the offer
     # promotioned offers contain "promo"
     atag = article.a
     id = str(atag.get('href'))[21:57]
@@ -47,6 +44,8 @@ def get_job(article, page, cat, subcat, employment_typ, industry):
     job = (id, cat, subcat, employment_typ, industry, page, title, company, place, promo, today)
     return job
 
+
+# scrapes through one query (with the same filters) and goes through multiple pages if necessary
 def scrape(cat,subcat,employment_typ,industry):
 
     # The first page gets loaded to detect the number of pages
@@ -55,16 +54,18 @@ def scrape(cat,subcat,employment_typ,industry):
     # to slow the algorithm down and don't send too many requests at once
     time.sleep(random.randint(0,5))
 
+    # requests first result page
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
 
+    # detects the number of pages according to the navigation element of the first page
     navigation_span = soup.find_all("span", "Span-sc-1ybanni-0 Text__span-sc-1lu7urs-8 Text-sc-1lu7urs-9 fJEZEL")
     if len(navigation_span) == 0:
         number_of_pages = 1
     else:
         number_of_pages = int(str(navigation_span[0])[-11:-7].replace("/",""))
 
-    # preparation of filename
+    # preparation of filename for result file
     file = "result_" + cat + "_" + subcat
 
     # for every page of the results gets analysed with BeautifulSoup and written (appended) into the created csv-file 
@@ -77,11 +78,14 @@ def scrape(cat,subcat,employment_typ,industry):
         # to slow the algorithm down and don't send too many requests at once
         time.sleep(random.randint(0,5))
 
+        # requests result page
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'lxml')
 
+        # finds all article-tags which represent one job offer
         articles = soup.find_all('article')
 
+        # if there's no article-tag (len(articles) == 0), there's no result for this filter and the next steps are not needed / possible
         if len(articles) != 0:
 
             # goes through all articles (job offers)
@@ -93,6 +97,8 @@ def scrape(cat,subcat,employment_typ,industry):
                 writer = csv.writer(f)
                 writer.writerows(jobs)
 
+
+# goes through all possible filters (employment typ, industry) for one category and subcategory
 def scrape_cat(cat, subcat):
 
     # preparation of filename
@@ -110,7 +116,6 @@ def scrape_cat(cat, subcat):
             scrape(cat, subcat, str(et + 1), str(ind + 1))
 
 
-
 test = {
     "purchasing-logistics-trading": [
         "logistics-supply-chain"],
@@ -119,11 +124,14 @@ test = {
         "product-brand-management"]
 }
 
+# goes through all categories given
 for cat in test.keys():
     array = test.get(cat)
     for subcat in array:
         scrape_cat(cat, subcat)
 
+
+# note:
 empl_typs = {
     "Temporary": 1,
     "Freelance": 2,
