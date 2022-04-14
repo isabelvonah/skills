@@ -39,17 +39,25 @@ def get_offer(soup):
     
     cat_div = soup.find("div", "Div-sc-1cpunnt-0 ffMwOV")
     categories = cat_div.get_text()[10:]
-
-    links = soup.find_all("a", "Link__ExtendedRRLink-sc-czsz28-1 Link-sc-czsz28-2 jEnTUT")
     
     if soup.find("iframe"):
-        iframe = soup.find("iframe")
-        response = urllib3.urlopen(iframe.attrs['src'])
-        text = "IFRAME" + get_text(str(BeautifulSoup(response)))
+
+        iframe = soup.find("div", "Div-sc-1cpunnt-0 DetailVacancyView__StyledVacancyDetailWrapper-sc-8f0fxs-0 jzJSph gpGrF").iframe
+        text = get_text(str(iframe.get("srcdoc")))
+
+        # When the content of the offer isn't found, another request must be made
+        if "Redirection failed" in text:
+            iframe_temp = str(iframe.get("srcdoc"))
+            new_link = BeautifulSoup(iframe_temp, "lxml").find("a").get("href")
+            new_response = requests.get(new_link)
+            new_soup = BeautifulSoup(new_response.text, 'lxml')
+            text = get_text(str(new_soup.body))
+
     else:
+
         iframe = soup.find("div", "Div-sc-1cpunnt-0 DetailVacancyView__StyledVacancyDetailWrapper-sc-8f0fxs-0 jzJSph gpGrF")
         # uses inscriptis instead of Beautiful Soup
-        text = "DIV" + get_text(str(iframe))
+        text = get_text(str(iframe))
 
     # The date of the request is also required as a log attribute
     today = datetime.today(),strftime('%y-%m-%d')
@@ -70,7 +78,7 @@ for i in range(len(ids)):
     soup = BeautifulSoup(response.text, 'lxml')
 
     # to slow the algorithm down and don't send too many requests at once
-    time.sleep(random.randint(0,5))
+    time.sleep(random.randint(0,2))
 
     try:
         offer = get_offer(soup)
