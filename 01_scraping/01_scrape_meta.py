@@ -93,7 +93,7 @@ def scrape(cat,subcat,employment_typ,industry):
                 job = get_job(article, page, cat, subcat, employment_typ, industry)
                 jobs.append(job)
 
-            with open(file + '.csv', 'a', newline='', encoding='utf-8') as f:
+            with open("01_scrape_meta/" + file + '.csv', 'a', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
                 writer.writerows(jobs)
 
@@ -105,19 +105,40 @@ def scrape_cat(cat, subcat):
     file = "result_" + cat + "_" + subcat
 
     # creation of the csv-file
-    with open(file + '.csv', 'w', newline='', encoding='utf-8') as f:
+    with open("01_scrape_meta/" + file + '.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(['id', 'cat', 'subcat', 'employment-typ', 'industry', 'page', 'title', 'company', 'place', 'promo', 'date'])
     
+    counter = 0
+
     # goes through all employment_typ's
     for et in range(6):
         # goes through all industries
         for ind in range(24):
+
+            # prints message after every 10 requests
+            counter += 1
+            if counter%10 == 0:
+                print(cat + " / " + subcat + ": " + str(counter) + " / " + str(6 * 24) + "    " + datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)"))
+
             scrape(cat, subcat, str(et + 1), str(ind + 1))
+    
+    # prints message after every subcategory
+    print("finished: " + cat + " / " + subcat + "    " + datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)"))
 
 
 categories = {
-    "admin-hr-consulting-ceo": [""],
+    "admin-hr-consulting-ceo": [
+        "ceo-management",
+        "secretary-reception",
+        "management-assistance",
+        "processing-language-translation",
+        "hr-management-development",
+        "personnel-placement-consultancy",
+        "consultancy-company-development",
+        "quality-management",
+        "legal-attorneys-court",
+        "regulatory-affairs"],
     "finance-trusts-real-estate": [
         "auditing-revision-auditing",
         "controlling",
