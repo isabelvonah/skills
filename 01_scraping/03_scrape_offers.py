@@ -66,9 +66,9 @@ def get_offer(soup):
     return offer
 
 # The csv-file for the results gets created and prepared with the title row
-with open('03_scrape_offers.csv', 'w', newline='', encoding='utf-8') as f:
-   writer = csv.writer(f)
-   writer.writerow(['id', 'title', 'date', 'company', 'place', 'position', 'workload', 'categories', 'text', 'today'])
+# with open('03_scrape_offers.csv', 'w', newline='', encoding='utf-8') as f:
+#    writer = csv.writer(f)
+#    writer.writerow(['id', 'title', 'date', 'company', 'place', 'position', 'workload', 'categories', 'text', 'today'])
 
 # for receiving a control message while scraping
 counter = 0
@@ -91,7 +91,7 @@ for i in range(len(ids)):
     try:
         offer = get_offer(soup)
     
-        with open('03_scrape_offers.csv', 'a', newline='', encoding='utf-8') as f:
+        with open('03_scrape_offers_4.csv', 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(offer)
 

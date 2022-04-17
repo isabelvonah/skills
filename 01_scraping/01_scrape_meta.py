@@ -52,7 +52,7 @@ def scrape(cat,subcat,employment_typ,industry):
     url = get_url(cat, subcat, employment_typ, industry, 0)
 
     # to slow the algorithm down and don't send too many requests at once
-    time.sleep(random.randint(0,5))
+    time.sleep(random.randint(0,3))
 
     # requests first result page
     response = requests.get(url)
@@ -76,7 +76,7 @@ def scrape(cat,subcat,employment_typ,industry):
         url = get_url(cat, subcat, employment_typ, industry, page)
 
         # to slow the algorithm down and don't send too many requests at once
-        time.sleep(random.randint(0,5))
+        time.sleep(random.randint(0,3))
 
         # requests result page
         response = requests.get(url)
@@ -128,37 +128,7 @@ def scrape_cat(cat, subcat):
 
 
 categories = {
-    "admin-hr-consulting-ceo": [
-        "ceo-management",
-        "secretary-reception",
-        "management-assistance",
-        "processing-language-translation",
-        "hr-management-development",
-        "personnel-placement-consultancy",
-        "consultancy-company-development",
-        "quality-management",
-        "legal-attorneys-court",
-        "regulatory-affairs"],
-    "finance-trusts-real-estate": [
-        "auditing-revision-auditing",
-        "controlling",
-        "finance"],
-    "banking-insurance": [
-        "asset-portfolio-management",
-        "actuary-mathematics",
-        "financial-business-analysis",
-        "funds-stocks-trade",
-        "risk-management-compliance",
-        "treasury-controlling-auditing",
-        "project-management"],
-    "purchasing-logistics-trading": [
-        "logistics-supply-chain"],
-    "marketing-communications-editorial": [
-        "online-marketing-social-media",
-        "product-brand-management"],
     "information-technology-telecom": [
-        "testing-audit-security",
-        "consultancy-business-informatics",
         "database-specialists-development",
         "network-specialists-engineers",
         "project-management-analysis",
