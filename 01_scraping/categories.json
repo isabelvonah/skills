@@ -1,5 +1,15 @@
 {
-    "admin-hr-consulting-ceo": [""],
+    "admin-hr-consulting-ceo": [
+        "ceo-management",
+        "secretary-reception",
+        "management-assistance",
+        "processing-language-translation",
+        "hr-management-development",
+        "personnel-placement-consultancy",
+        "consultancy-company-development",
+        "quality-management",
+        "legal-attorneys-court",
+        "regulatory-affairs"],
     "finance-trusts-real-estate": [
         "auditing-revision-auditing",
         "controlling",
@@ -45,4 +55,5 @@
         "public-administration",
         "science-research",
         "teaching-lecturing"] 
+
 }
